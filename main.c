@@ -4,9 +4,9 @@
 
 void init_params(parameters* params) {
     params->pop_size = 100;
-    params->time_steps = 10;
-    params->r0 = 4.11;
-    params->death_rate = 0.01;
+    params->time_steps = 50;
+    params->r0 = 2.11;
+    params->death_rate = 0.001;
     params->recover_time = 10;
     params->infected0 = 1;
 }
@@ -23,7 +23,8 @@ void init_state(state* state, parameters* params) {
             .infected_time = 0,
             .diagnosed = 0,
             .has_been_infected = 0,
-            .has_infected = 0
+            .has_infected = 0,
+            .deceased = 0
         };
     }
 

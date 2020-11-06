@@ -35,6 +35,7 @@ typedef struct Person {
     int diagnosed;
     int has_been_infected;
     int has_infected;
+    int deceased;
 
 } person;
 

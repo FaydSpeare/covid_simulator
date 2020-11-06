@@ -21,9 +21,11 @@ void step(state* s, parameters* params) {
     person* susceptible[params->pop_size];
     int infected_count = 0;
     int susceptible_count = 0;
+    int deceased_count = 0;
     for (int i = 0; i < params->pop_size; i++) {
         person* p = &s->population[i];
-        if (p->infected) infected[infected_count++] = p;
+        if (p->deceased) deceased_count++;
+        else if (p->infected) infected[infected_count++] = p;
         else susceptible[susceptible_count++] = p;
     }
 
@@ -42,6 +44,10 @@ void step(state* s, parameters* params) {
                 infected_person->has_infected++;
                 infected_count++;
                 printf("Someone was infected.\n");
+
+                // No susceptible people left
+                if (susceptible_count == 0)
+                    break;
             }
         }
 
@@ -51,22 +57,41 @@ void step(state* s, parameters* params) {
 
     for (int i = 0; i < params->pop_size; i++) {
         person* p = &s->population[i];
+        if (p->deceased) continue;
 
         // Update infection times
         if (p->infected) {
             p->infected_time++;
 
+            if (rnd() < params->death_rate) {
+                p->deceased = 1;
+                deceased_count++;
+                infected_count--;
+            }
+
             // Recover if person has been infected for long enough
-            if (p->infected_time >= params->recover_time) {
+            else if (p->infected_time >= params->recover_time) {
                 p->infected = 0;
                 p->infected_time = 0;
             }
+
+
         }
 
     }
 
+    int recovered_count = 0;
+    for (int i = 0; i < params->pop_size; i++) {
+        person* p = &s->population[i];
+        if (p->has_been_infected && !p->infected && !p->deceased) recovered_count++;
+    }
 
+
+
+
+    printf("Recovered Count: %d\n", recovered_count);
+    printf("Susceptible Count: %d\n", susceptible_count);
     printf("Infected Count: %d\n", infected_count);
-    printf("Susceptible Count: %d\n\n", susceptible_count);
+    printf("Deceased Count: %d\n\n", deceased_count);
 
 }
