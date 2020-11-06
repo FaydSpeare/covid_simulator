@@ -16,6 +16,15 @@ typedef struct Parameters {
     // reproduction number for virus
     double r0;
 
+    // death rate from virus
+    double death_rate;
+
+    // time steps to recover
+    int recover_time;
+
+    // initial infected
+    int infected0;
+
 } parameters;
 
 
@@ -24,6 +33,8 @@ typedef struct Person {
     int infected;
     int infected_time;
     int diagnosed;
+    int has_been_infected;
+    int has_infected;
 
 } person;
 
