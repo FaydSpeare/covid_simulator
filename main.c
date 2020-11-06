@@ -1,6 +1,22 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "simulator.h"
+
+void print_array(int* arrray, int len) {
+    printf("[");
+    for (int i = 0; i < len; i++) {
+        printf("%d ", arrray[i]);
+    }
+    printf("]\n");
+}
+
+void print_counts(parameters* params, state* s) {
+    print_array(s->s_counts, params->time_steps);
+    print_array(s->i_counts, params->time_steps);
+    print_array(s->d_counts, params->time_steps);
+    print_array(s->r_counts, params->time_steps);
+}
 
 void init_params(parameters* params) {
     params->pop_size = 100;
@@ -9,32 +25,8 @@ void init_params(parameters* params) {
     params->death_rate = 0.001;
     params->recover_time = 10;
     params->infected0 = 1;
+    params->test_rate = 0.1;
 }
-
-
-void init_state(state* state, parameters* params) {
-
-    state->time_step = 0;
-    state->population = (person*) malloc(sizeof(person) * params->pop_size);
-
-    for (int i = 0; i < params->pop_size; i++) {
-        state->population[i] = (person) {
-            .infected = 0,
-            .infected_time = 0,
-            .diagnosed = 0,
-            .has_been_infected = 0,
-            .has_infected = 0,
-            .deceased = 0
-        };
-    }
-
-    for (int i = 0; i < params->infected0; i++) {
-        state->population[i].infected = 1;
-        state->population[i].has_been_infected = 1;
-    }
-
-}
-
 
 void run_simulation() {
 
@@ -45,8 +37,10 @@ void run_simulation() {
     init_state(&s, &params);
 
     for (int i = 0; i < params.time_steps; i++) {
-        step(&s, &params);
+        step(&s, &params, 0);
     }
+
+    print_counts(&params, &s);
 
 }
 

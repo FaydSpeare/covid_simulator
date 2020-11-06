@@ -25,6 +25,9 @@ typedef struct Parameters {
     // initial infected
     int infected0;
 
+    // test rate
+    double test_rate;
+
 } parameters;
 
 
@@ -44,9 +47,14 @@ typedef struct State {
 
     int time_step;
     person* population;
+    int* s_counts;
+    int* i_counts;
+    int* r_counts;
+    int* d_counts;
 
 } state;
 
-void step(state* state, parameters* params);
+void init_state(state* state, parameters* params);
+void step(state* state, parameters* params, int verbose);
 
 #endif //COVID_SIMULATOR_SIMULATOR_H
