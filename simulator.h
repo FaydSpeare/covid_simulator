@@ -16,6 +16,9 @@ typedef struct Parameters {
     // reproduction number for virus
     double r0;
 
+    // reproduced number for those diagnosed
+    double r0_diagnosed;
+
     // death rate from virus
     double death_rate;
 
@@ -47,10 +50,11 @@ typedef struct State {
 
     int time_step;
     person* population;
-    int* s_counts;
-    int* i_counts;
-    int* r_counts;
-    int* d_counts;
+    int* susceptible_counts;
+    int* infected_counts;
+    int* recovered_counts;
+    int* deceased_counts;
+    int* diagnosed_counts;
 
 } state;
 

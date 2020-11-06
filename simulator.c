@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "simulator.h"
 
@@ -28,10 +29,11 @@ void init_state(state* state, parameters* params) {
         state->population[i].has_been_infected = 1;
     }
 
-    state->s_counts = malloc(sizeof(int) * params->time_steps);
-    state->i_counts = malloc(sizeof(int) * params->time_steps);
-    state->r_counts = malloc(sizeof(int) * params->time_steps);
-    state->d_counts = malloc(sizeof(int) * params->time_steps);
+    state->susceptible_counts = malloc(sizeof(int) * params->time_steps);
+    state->infected_counts = malloc(sizeof(int) * params->time_steps);
+    state->recovered_counts = malloc(sizeof(int) * params->time_steps);
+    state->deceased_counts = malloc(sizeof(int) * params->time_steps);
+    state->diagnosed_counts = malloc(sizeof(int) * params->time_steps);
 
 }
 
@@ -41,6 +43,7 @@ double rnd() {
 }
 
 void step(state* s, parameters* params, int verbose) {
+
 
     if (verbose) printf("Time Step: %d\n", s->time_step);
 
@@ -57,12 +60,20 @@ void step(state* s, parameters* params, int verbose) {
         else susceptible[susceptible_count++] = p;
     }
 
-    double prob_of_infection = (params->r0 / (double) params->recover_time);
     const int current_infected_count = infected_count;
     for (int i = 0; i < current_infected_count; i++) {
 
+        // No susceptible people left
+        if (susceptible_count == 0)
+            break;
+
         person* infected_person = infected[i];
-        if (infected_person->has_infected < params->r0) {
+
+        double infection_rate = params->r0;
+        if (infected_person->diagnosed) infection_rate = params->r0_diagnosed;
+        double prob_of_infection = (infection_rate / (double) params->recover_time);
+
+        if (infected_person->has_infected < infection_rate) {
 
             // Infect new people
             if (rnd() < prob_of_infection) {
@@ -71,16 +82,21 @@ void step(state* s, parameters* params, int verbose) {
                 new_infected_person->has_been_infected = 1;
                 infected_person->has_infected++;
                 infected_count++;
-                // printf("Someone was infected.\n");
-
-                // No susceptible people left
-                if (susceptible_count == 0)
-                    break;
+                //printf("Someone was infected.\n");
             }
         }
 
     }
 
+    // Testing
+    for (int i = 0; i < params->pop_size; i++) {
+        person* p = &s->population[i];
+        if (p->deceased) continue;
+
+        if (p->infected && rnd() < params->test_rate) {
+            p->diagnosed = 1;
+        }
+    }
 
 
     for (int i = 0; i < params->pop_size; i++) {
@@ -101,6 +117,11 @@ void step(state* s, parameters* params, int verbose) {
             else if (p->infected_time >= params->recover_time) {
                 p->infected = 0;
                 p->infected_time = 0;
+                p->diagnosed = 0;
+                p->has_infected = 0;
+                susceptible_count++;
+                infected_count--;
+                //printf("Someone recovered.\n");
             }
 
 
@@ -109,19 +130,25 @@ void step(state* s, parameters* params, int verbose) {
     }
 
     int recovered_count = 0;
+    int diagnosed_count = 0;
     for (int i = 0; i < params->pop_size; i++) {
         person* p = &s->population[i];
-        if (p->has_been_infected && !p->infected && !p->deceased) recovered_count++;
+        if (p->deceased) continue;
+
+        if (p->has_been_infected && !p->infected) recovered_count++;
+        if (p->diagnosed) diagnosed_count++;
     }
 
 
-    s->s_counts[s->time_step] = susceptible_count;
-    s->i_counts[s->time_step] = infected_count;
-    s->r_counts[s->time_step] = recovered_count;
-    s->d_counts[s->time_step] = deceased_count;
+    s->susceptible_counts[s->time_step] = susceptible_count;
+    s->infected_counts[s->time_step] = infected_count;
+    s->recovered_counts[s->time_step] = recovered_count;
+    s->deceased_counts[s->time_step] = deceased_count;
+    s->diagnosed_counts[s->time_step] = diagnosed_count;
 
     if (verbose) {
         printf("Recovered Count: %d\n", recovered_count);
+        printf("Diagnosed Count: %d\n", diagnosed_count);
         printf("Susceptible Count: %d\n", susceptible_count);
         printf("Infected Count: %d\n", infected_count);
         printf("Deceased Count: %d\n\n", deceased_count);
