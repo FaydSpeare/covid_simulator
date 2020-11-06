@@ -32,15 +32,15 @@ void init_state(state* s, parameters* params) {
     }
 
     for (int i = 0; i < params->infected0; i++) {
-        state->population[i].infected = 1;
-        state->population[i].has_been_infected = 1;
+        s->population[i].infected = 1;
+        s->population[i].has_been_infected = 1;
     }
 
-    state->susceptible_counts = malloc(sizeof(int) * params->time_steps);
-    state->infected_counts = malloc(sizeof(int) * params->time_steps);
-    state->recovered_counts = malloc(sizeof(int) * params->time_steps);
-    state->deceased_counts = malloc(sizeof(int) * params->time_steps);
-    state->diagnosed_counts = malloc(sizeof(int) * params->time_steps);
+    s->susceptible_counts = malloc(sizeof(int) * params->time_steps);
+    s->infected_counts = malloc(sizeof(int) * params->time_steps);
+    s->recovered_counts = malloc(sizeof(int) * params->time_steps);
+    s->deceased_counts = malloc(sizeof(int) * params->time_steps);
+    s->diagnosed_counts = malloc(sizeof(int) * params->time_steps);
 
 }
 
