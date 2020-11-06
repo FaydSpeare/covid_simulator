@@ -44,6 +44,7 @@ void run_simulation() {
     }
 
     print_counts(&params, &s);
+    free_state(&s);
 
 }
 

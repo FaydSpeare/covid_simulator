@@ -58,6 +58,7 @@ typedef struct State {
 
 } state;
 
+void free_state(state* s);
 void init_state(state* state, parameters* params);
 void step(state* state, parameters* params, int verbose);
 

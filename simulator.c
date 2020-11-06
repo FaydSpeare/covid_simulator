@@ -4,17 +4,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "simulator.h"
 
-void init_state(state* state, parameters* params) {
+void free_state(state* s) {
+    free(s->deceased_counts);
+    free(s->diagnosed_counts);
+    free(s->susceptible_counts);
+    free(s->infected_counts);
+    free(s->recovered_counts);
+}
 
-    state->time_step = 0;
-    state->population = malloc(sizeof(person) * params->pop_size);
+void init_state(state* s, parameters* params) {
+
+    s->time_step = 0;
+    s->population = malloc(sizeof(person) * params->pop_size);
 
     for (int i = 0; i < params->pop_size; i++) {
-        state->population[i] = (person) {
+        s->population[i] = (person) {
                 .infected = 0,
                 .infected_time = 0,
                 .diagnosed = 0,
