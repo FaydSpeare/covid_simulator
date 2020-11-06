@@ -18,4 +18,23 @@ typedef struct Parameters {
 
 } parameters;
 
+
+typedef struct Person {
+
+    int infected;
+    int infected_time;
+    int diagnosed;
+
+} person;
+
+
+typedef struct State {
+
+    int time_step;
+    person* population;
+
+} state;
+
+void step(state* state, parameters* params);
+
 #endif //COVID_SIMULATOR_SIMULATOR_H
